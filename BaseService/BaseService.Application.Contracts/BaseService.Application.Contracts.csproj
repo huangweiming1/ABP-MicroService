@@ -2,19 +2,35 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>BaseService</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>XCZ.BaseService.Application.Contracts</PackageId>
+    <Version>2.0.0</Version>
+    <Authors>XCZ</Authors>
+    <Company>XCZ</Company>
+    <Product>BaseService.Application.Contracts</Product>
+    <RepositoryUrl>https://github.com/WilliamXu96/ABP-MicroService</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Ddd.Application"  Version="5.1.4" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Application.Contracts" Version="5.1.4" />
-    <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="5.1.4" />
-    <PackageReference Include="XCZ.FileStorage.Application.Contracts" Version="0.1.1" />
+    <None Remove="Localization\BaseService\cs.json" />
+    <None Remove="Localization\BaseService\en.json" />
+    <None Remove="Localization\BaseService\zh-Hans.json" />
+    <None Remove="Localization\BaseService\zh-Hant.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BaseService.Domain\BaseService.Domain.csproj" />
+    <EmbeddedResource Include="Localization\BaseService\cs.json" />
+    <EmbeddedResource Include="Localization\BaseService\en.json" />
+    <EmbeddedResource Include="Localization\BaseService\zh-Hans.json" />
+    <EmbeddedResource Include="Localization\BaseService\zh-Hant.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Ddd.Application" Version="8.1.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application.Contracts" Version="8.1.1" />
+    <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="8.1.1" />
   </ItemGroup>
 
 </Project>

@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>FileStorage</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AutoMapper"  Version="5.1.4" />
+    <PackageReference Include="Volo.Abp.AutoMapper" Version="8.1.1" />
+	<PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>

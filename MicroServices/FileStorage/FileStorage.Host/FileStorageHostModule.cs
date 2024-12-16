@@ -1,4 +1,5 @@
 ﻿using FileStorage.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.DataProtection;
@@ -52,7 +53,7 @@ namespace FileStorage
             ConfigureCache(configuration);
             ConfigureVirtualFileSystem(context);
             ConfigureCors(context, configuration);
-            ConfigureRedis(context, configuration, hostingEnvironment);
+            //ConfigureRedis(context, configuration, hostingEnvironment);
             ConfigureSwaggerServices(context);
         }
 
@@ -60,7 +61,10 @@ namespace FileStorage
         {
             Configure<AbpAspNetCoreMvcOptions>(options =>
             {
-                options.ConventionalControllers.Create(typeof(FileStorageApplicationModule).Assembly);
+                options.ConventionalControllers.Create(typeof(FileStorageApplicationModule).Assembly, opts =>
+                {
+                    opts.RootPath = "storage";
+                });
             });
         }
 
@@ -119,12 +123,12 @@ namespace FileStorage
 
         private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
         {
-            context.Services.AddAuthentication("Bearer")
-                .AddIdentityServerAuthentication(options =>
+            context.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
                     options.Authority = configuration["AuthServer:Authority"];
                     options.RequireHttpsMetadata = false;
-                    options.ApiName = "BusinessService";
+                    options.Audience = "BusinessService";
                 });
         }
 
@@ -175,7 +179,7 @@ namespace FileStorage
             var app = context.GetApplicationBuilder();
 
             app.UseCorrelationId();
-            app.UseVirtualFiles();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors(DefaultCorsPolicyName);
             app.UseAuthentication();

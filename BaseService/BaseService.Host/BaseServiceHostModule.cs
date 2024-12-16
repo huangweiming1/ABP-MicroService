@@ -1,31 +1,27 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 using Microsoft.OpenApi.Models;
 using Volo.Abp;
 using Volo.Abp.Auditing;
 using Volo.Abp.Autofac;
 using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using System;
-using Volo.Abp.TenantManagement;
 using Volo.Abp.Threading;
 using Volo.Abp.Data;
 using Volo.Abp.AspNetCore.Serilog;
-using Volo.Abp.PermissionManagement.HttpApi;
 using Microsoft.AspNetCore.Cors;
 using Volo.Abp.MultiTenancy;
 using BaseService.EntityFrameworkCore;
-using Business;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Volo.Abp.Security.Claims;
 using System.Security.Claims;
+using Volo.Abp.PermissionManagement;
+using Volo.Abp.FeatureManagement;
 
 namespace BaseService
 {
@@ -35,7 +31,6 @@ namespace BaseService
         typeof(BaseServiceEntityFrameworkCoreModule),
         typeof(BaseServiceHttpApiModule),
         typeof(AbpAspNetCoreMultiTenancyModule),
-        
         typeof(AbpAspNetCoreSerilogModule)
     )]
     public class BaseServiceHostModule : AbpModule
@@ -142,6 +137,12 @@ namespace BaseService
                 options.Languages.Add(new LanguageInfo("zh-Hans", "zh-Hans", "简体中文"));
                 options.Languages.Add(new LanguageInfo("zh-Hant", "zh-Hant", "繁體中文"));
             });
+
+            Configure<PermissionManagementOptions>(options =>
+            {
+                options.IsDynamicPermissionStoreEnabled = true;
+            });
+
         }
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)

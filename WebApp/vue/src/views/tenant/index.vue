@@ -1,49 +1,19 @@
 <template>
   <div class="app-container">
     <div class="head-container">
-      <el-input
-        v-model="listQuery.Filter"
-        clearable
-        size="small"
-        placeholder="搜索..."
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-button
-        class="filter-item"
-        size="mini"
-        type="success"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >搜索</el-button>
+      <el-input v-model="listQuery.Filter" clearable size="small" placeholder="搜索..." style="width: 200px;"
+        class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-button class="filter-item" size="mini" type="success" icon="el-icon-search"
+        @click="handleFilter">搜索</el-button>
       <div style="padding: 6px 0;">
-        <el-button
-          class="filter-item"
-          size="mini"
-          type="primary"
-          icon="el-icon-plus"
-          @click="handleCreate"
-          v-permission="['AbpTenantManagement.Tenants.Create']"
-        >新增</el-button>
+        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="handleCreate"
+          v-permission="['AbpTenantManagement.Tenants.Create']">新增</el-button>
       </div>
     </div>
 
-    <el-dialog
-      :visible.sync="dialogFormVisible"
-      :close-on-click-modal="false"
-      :title="formTitle"
-      @close="cancel()"
-      width="500px"
-    >
-      <el-form
-        ref="form"
-        :inline="true"
-        :model="form"
-        :rules="rules"
-        size="small"
-        label-width="90px"
-      >
+    <el-dialog :visible.sync="dialogFormVisible" :close-on-click-modal="false" :title="formTitle" @close="cancel()"
+      width="500px">
+      <el-form ref="form" :inline="true" :model="form" :rules="rules" size="small" label-width="90px">
         <el-form-item label="名称" prop="name">
           <el-input v-model="form.name" style="width: 350px;" />
         </el-form-item>
@@ -60,46 +30,54 @@
       </div>
     </el-dialog>
 
-    <el-table
-      ref="multipleTable"
-      v-loading="listLoading"
-      :data="list"
-      size="small"
-      style="width: 90%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column label="租户名称" prop="name" sortable="custom" align="center" width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{row.name}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center">
-        <template slot-scope="{row}">
-          <el-button
-            type="primary"
-            size="mini"
-            @click="handleUpdate(row)"
-            v-permission="['AbpTenantManagement.Tenants.Update']"
-            icon="el-icon-edit"
-          />
-          <el-button
-            type="danger"
-            size="mini"
-            @click="handleDelete(row)"
-            v-permission="['AbpTenantManagement.Tenants.Delete']"
-            icon="el-icon-delete"
-          />
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-row :gutter="15">
+      <!--租户管理-->
+      <el-col :md="16" style="margin-bottom: 10px">
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix" style="height: 20px">
+            <span class="role-span">租户列表</span>
+          </div>
+          <el-table ref="multipleTable" v-loading="listLoading" :data="list" size="small" style="width: 90%"
+            @sort-change="sortChange" @selection-change="handleSelectionChange" @row-click="handleRowClick">
+            <el-table-column type="selection" width="44px"></el-table-column>
+            <el-table-column label="租户名称" prop="name" sortable="custom" align="center" width="150px">
+              <template slot-scope="{row}">
+                <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="{row}">
+                <el-button type="text" size="mini" @click="handleUpdate(row)"
+                  v-permission="['AbpTenantManagement.Tenants.Update']" icon="el-icon-edit">修改</el-button>
+                <el-button type="text" size="mini" @click="handleDelete(row)"
+                  v-permission="['AbpTenantManagement.Tenants.Delete']" icon="el-icon-delete">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <pagination v-show="totalCount > 0" :total="totalCount" :page.sync="page"
+            :limit.sync="listQuery.MaxResultCount" @pagination="getList" />
+        </el-card>
+      </el-col>
 
-    <pagination
-      v-show="totalCount>0"
-      :total="totalCount"
-      :page.sync="page"
-      :limit.sync="listQuery.MaxResultCount"
-      @pagination="getList"
-    />
+      <el-col :md="8">
+        <el-card class="box-card" shadow="never">
+          <div slot="header" style="height: 20px; line-height: 20px">
+            <el-tooltip class="item" effect="dark" content="选择租户菜单权限" placement="top">
+              <span>租户菜单</span>
+            </el-tooltip>
+            <span style="float: right; margin-top: -8px">
+              <el-checkbox v-model="checked" @change="checkedAll" :disabled="multipleSelection.length != 1">
+                全选</el-checkbox>
+              <el-button v-permission="['AbpIdentity.Roles.ManagePermissions']" :loading="savePerLoading"
+                :disabled="multipleSelection.length != 1" icon="el-icon-check" type="text"
+                @click="savePer">保存</el-button>
+            </span>
+          </div>
+          <el-tree ref="tree" v-loading="treeLoading" :check-strictly="true" :data="menus" show-checkbox node-key="id"
+            class="permission-tree" />
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -124,9 +102,13 @@ export default {
       },
       form: Object.assign({}, defaultForm),
       list: null,
+      menuData: [],
+      menus: [],
       totalCount: 0,
       listLoading: true,
       formLoading: false,
+      treeLoading: false,
+      savePerLoading: false,
       listQuery: {
         Filter: "",
         Sorting: "",
@@ -138,6 +120,7 @@ export default {
       multipleSelection: [],
       formTitle: "",
       isEdit: false,
+      checked: false,
     };
   },
   created() {
@@ -207,6 +190,26 @@ export default {
         }
       });
     },
+    savePer() {
+      this.savePerLoading = true;
+      let params = {};
+      let checkedKeys = this.$refs.tree.getCheckedKeys();
+      this.$axios
+        .posts("/api/base/tenant/menu", {
+          tenantId: this.multipleSelection[0].id,
+          menuIds: checkedKeys,
+        }).then(() => {
+          this.$notify({
+            title: "成功",
+            message: "更新成功",
+            type: "success",
+            duration: 2000,
+          });
+          this.savePerLoading = false;
+        }).catch(() => {
+          this.savePerLoading = false;
+        });
+    },
     handleCreate() {
       this.formTitle = "新增租户";
       this.isEdit = false;
@@ -257,6 +260,47 @@ export default {
         }
       }
     },
+    handleRowClick(row, column, event) {
+      if (
+        this.multipleSelection.length == 1 &&
+        this.multipleSelection[0].id == row.id
+      ) {
+        return;
+      }
+      this.treeLoading = true;
+      this.$refs.multipleTable.clearSelection();
+      this.$refs.multipleTable.toggleRowSelection(row);
+      this.$axios.gets("/api/base/tenant/menu/" + row.id).then((response) => {
+        this.$refs.tree.setCheckedKeys(response.items);
+        this.menuData = response.items;
+        this.menus = response.items.filter((_) => _.pid == null);
+        this.setChildren(this.menus, response.items);
+        this.$refs.tree.setCheckedKeys(response.items.filter(_ => _.isHost == false).map(_ => _.id));
+        this.treeLoading = false;
+      });
+    },
+    checkedAll() {
+      if (this.checked) {
+        //全选
+        this.$refs.tree.setCheckedNodes(this.menuData);
+      } else {
+        //取消选中
+        this.$refs.tree.setCheckedKeys([]);
+      }
+    },
+    setChildren(roots, items) {
+      roots.forEach((element) => {
+        items.forEach((item) => {
+          if (item.pid == element.id) {
+            if (!element.children) element.children = [];
+            element.children.push(item);
+          }
+        });
+        if (element.children) {
+          this.setChildren(element.children, items);
+        }
+      });
+    },
     sortChange(data) {
       const { prop, order } = data;
       if (!prop || !order) {
@@ -265,6 +309,9 @@ export default {
       }
       this.listQuery.Sorting = prop + " " + order;
       this.handleFilter();
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
     cancel() {
       this.form = Object.assign({}, defaultForm);

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.Elasticsearch;
 
 namespace InternalGateway
 {
@@ -28,19 +27,12 @@ namespace InternalGateway
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Async(c => c.File("Logs/logs.txt"))
-                .WriteTo.Elasticsearch(
-                    new ElasticsearchSinkOptions(new Uri(configuration["ElasticSearch:Url"]))
-                    {
-                        AutoRegisterTemplate = true,
-                        AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
-                        IndexFormat = "msdemo-log-{0:yyyy.MM}"
-                    })
                 .WriteTo.Console()
                 .CreateLogger();
 
             try
             {
-                Log.Information("Starting Business.Host");
+                Log.Information("Starting InternalGateway.Host");
                 CreateHostBuilder(args).Build().Run();
                 return 0;
             }

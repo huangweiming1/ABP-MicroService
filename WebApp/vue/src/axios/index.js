@@ -49,7 +49,7 @@ axios.interceptors.response.use((res) => {
         router.replace({
           path: '/login'
         })
-        break
+        return
 
       case 400:
         error.code = err.response.data.error.code
@@ -92,9 +92,7 @@ axios.interceptors.response.use((res) => {
         break
 
       case 502:
-        error.code = err.response.data.error.code
-        error.message = err.response.data.error.message
-        error.details = err.response.data.error.details
+        error.code = "502 Bad Gateway"
         break
 
       case 503:
@@ -289,6 +287,26 @@ export default {
     instance.defaults.headers.Authorization = 'Bearer ' + getToken()
     return new Promise((resolve, reject) => {
       instance.get(url, {
+          'params': params
+        })
+        .then(response => {
+          resolve(response.data)
+        }, err => {
+          Message({
+            message: err.message,
+            type: 'error',
+            duration: 5 * 1000
+          })
+          reject(err)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
+  getMenus(url, params) {
+    return new Promise((resolve, reject) => {
+      axios.get(url, {
           'params': params
         })
         .then(response => {

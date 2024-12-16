@@ -3,14 +3,9 @@
 #### 项目简介
 一个基于ABP vNext微服务架构、vue-element-admin的后台管理框架，适用于大型分布式业务系统和企业后台，也可以集成各种小程序、电商后台以及业务中台。
 
+**Vue3：https://github.com/WilliamXu96/abp-vue-next-admin**
+
 **GitHub： https://github.com/WilliamXu96/ABP-MicroService/**
-
-**Gitee： https://gitee.com/Bossxu666/abp-microservice**
-
-
-**博客地址：** [博客园](https://www.cnblogs.com/william-xu/)
-
-**视频地址：** [哔哩哔哩](https://space.bilibili.com/702776220/channel/seriesdetail?sid=604812)
 
 **快速启动：**
 运行run目录下脚本
@@ -28,6 +23,7 @@
 - 租户管理
 - 用户管理
 - 角色管理
+- 菜单管理
 - 组织机构
 - 字典管理
 - 岗位管理
@@ -38,6 +34,7 @@
 - 代码生成
 - 流程管理
 - 工作流&审批流
+- 报表打印
 #### TODO：
 - 数据权限
 #### 系统预览
@@ -70,4 +67,4 @@
 <img src="https://i.loli.net/2020/09/23/MgwR9oQWzmK5qGP.gif"/>
 
 #### 反馈交流
-- **QQ交流群：1083795392(已满)、 491813069**
+- **QQ交流群：群三：323314393 **
