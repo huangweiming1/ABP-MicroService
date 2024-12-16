@@ -12,7 +12,7 @@ namespace AuthServer.Host.EntityFrameworkCore
             var configuration = BuildConfiguration();
 
             var builder = new DbContextOptionsBuilder<AuthServerDbContext>()
-                .UseSqlServer(configuration.GetConnectionString("Default"));
+                .UseMySql(configuration.GetConnectionString("Default"),new MySqlServerVersion(new System.Version()));
 
             return new AuthServerDbContext(builder.Options);
         }
