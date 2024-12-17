@@ -2,6 +2,7 @@
 using Business.MultiTenancy;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
+using Hangfire.MySql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
@@ -23,7 +24,6 @@ using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.Caching;
 using Volo.Abp.Data;
-using Volo.Abp.EntityFrameworkCore.SqlServer;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
@@ -34,7 +34,6 @@ namespace Business
 {
     [DependsOn(
         typeof(AbpAutofacModule),
-        typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(BusinessHttpApiModule),
         typeof(BusinessApplicationModule),
         typeof(BusinessEntityFrameworkCoreModule),
@@ -82,7 +81,7 @@ namespace Business
         {
             context.Services.AddHangfire(config =>
             {
-                config.UseSqlServerStorage(configuration.GetConnectionString("Business"));
+                config.UseStorage(new MySqlStorage(configuration.GetConnectionString("Business"),new MySqlStorageOptions() { }) );
             });
         }
 

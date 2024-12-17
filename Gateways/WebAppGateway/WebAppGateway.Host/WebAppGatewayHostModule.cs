@@ -15,7 +15,6 @@ using System.Linq;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
-using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 
@@ -102,10 +101,10 @@ namespace WebAppGateway
 
         private void ConfigureSql()
         {
-            Configure<AbpDbContextOptions>(options =>
-            {
-                options.UseSqlServer();
-            });
+            //Configure<AbpDbContextOptions>(options =>
+            //{
+            //    options.UseSqlServer();
+            //});
         }
 
         private void ConfigureRedis(

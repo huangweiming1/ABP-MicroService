@@ -60,10 +60,10 @@ namespace AuthServer.Host
                 options.IsEnabled = true;
             });
 
-            //Configure<AbpDbContextOptions>(options =>
-            //{
-            //    options.mysql();
-            //});
+            Configure<AbpDbContextOptions>(options =>
+            {
+                options.UseMySQL();
+            });
 
             Configure<AbpLocalizationOptions>(options =>
             {

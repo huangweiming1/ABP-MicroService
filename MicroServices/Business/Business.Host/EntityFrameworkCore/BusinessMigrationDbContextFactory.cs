@@ -12,7 +12,7 @@ namespace Business.EntityFrameworkCore
             var configuration = BuildConfiguration();
 
             var builder = new DbContextOptionsBuilder<BusinessMigrationDbContext>()
-                .UseSqlServer(configuration.GetConnectionString("Business"));
+                .UseMySql(configuration.GetConnectionString("Business"),new MySqlServerVersion(new System.Version()));
 
             return new BusinessMigrationDbContext(builder.Options);
         }

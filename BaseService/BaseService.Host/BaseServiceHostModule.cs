@@ -88,10 +88,10 @@ namespace BaseService
                     });
             });
 
-            Configure<AbpDbContextOptions>(options =>
-            {
-                options.UseSqlServer();
-            });
+            //Configure<AbpDbContextOptions>(options =>
+            //{
+            //    options.UseSqlServer();
+            //});
 
             //context.Services.AddStackExchangeRedisCache(options =>
             //{
