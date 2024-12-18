@@ -89,10 +89,10 @@ namespace AuthServer.Host
 
             context.Services.AddSameSiteCookiePolicy();
 
-            //context.Services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = configuration["Redis:Configuration"];
-            //});
+            context.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration["Redis:Configuration"];
+            });
 
             Configure<AbpAuditingOptions>(options =>
             {

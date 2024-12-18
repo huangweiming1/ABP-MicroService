@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,16 +14,22 @@ using StackExchange.Redis;
 using System;
 using System.Linq;
 using Volo.Abp;
+using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
+using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
 
 namespace WebAppGateway
 {
     [DependsOn(
     typeof(AbpAutofacModule),
-    typeof(AbpAspNetCoreSerilogModule)
+    typeof(AbpAspNetCoreSerilogModule),
+    typeof(AbpMultiTenancyModule),
+    typeof(AbpAspNetCoreMultiTenancyModule)
+       
     )]
     public class WebAppGatewayHostModule: AbpModule
     {
@@ -32,13 +39,13 @@ namespace WebAppGateway
         {
             var configuration = context.Services.GetConfiguration();
             var hostingEnvironment = context.Services.GetHostingEnvironment();
-
+            context.Services.AddControllers();
+            context.Services.AddEndpointsApiExplorer();
             ConfigureAuthentication(context, configuration);
-            //ConfigureSql();
-            //ConfigureRedis(context, configuration, hostingEnvironment);
+            ConfigureSql();
+            ConfigureRedis(context, configuration, hostingEnvironment);
             ConfigureCors(context, configuration);
-            //ConfigureSwaggerServices(context);
-            ConfigureLocalization();
+            ConfigureSwaggerServices(context);
             context.Services.AddOcelot(context.Services.GetConfiguration());
         }
 
@@ -51,14 +58,24 @@ namespace WebAppGateway
             app.UseRouting();
             app.UseCors(DefaultCorsPolicyName);
             app.UseAuthentication();
-            app.UseAbpClaimsMap();
+            app.UseMultiTenancy();
             app.UseAuthorization();
 
-            //app.UseSwagger();
-            //app.UseSwaggerUI(options =>
-            //{
-            //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Business Service API");
-            //});
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Business Service API");
+            });
+
+            app.MapWhen(
+                ctx => ctx.Request.Path.ToString().StartsWith("/api/abp/") ||
+                       ctx.Request.Path.ToString().StartsWith("/Abp/"),
+                app2 =>
+                {
+                    app2.UseRouting();
+                    app2.UseMvcWithDefaultRouteAndArea();
+                }
+            );
 
             app.UseOcelot().Wait();
             app.UseAbpSerilogEnrichers();
@@ -83,6 +100,7 @@ namespace WebAppGateway
                     options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAppGateway Service API", Version = "v1" });
                     options.DocInclusionPredicate((docName, description) => true);
                 });
+         
         }
 
         private void ConfigureLocalization()
@@ -101,10 +119,10 @@ namespace WebAppGateway
 
         private void ConfigureSql()
         {
-            //Configure<AbpDbContextOptions>(options =>
-            //{
-            //    options.UseSqlServer();
-            //});
+            Configure<AbpDbContextOptions>(options =>
+            {
+                options.UseMySQL();
+            });
         }
 
         private void ConfigureRedis(
